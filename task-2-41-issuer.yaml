@@ -1,0 +1,10 @@
+# Namespace-scoped Issuer (task naming: task-2-41-issuer).
+# SelfSigned: good for labs — cert reaches Ready without ACME/DNS.
+# Production: replace with ACME (Let's Encrypt) or your org's CA Issuer.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: task-2-41-issuer
+  namespace: akash-c-a
+spec:
+  selfSigned: {}

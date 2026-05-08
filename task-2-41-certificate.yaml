@@ -1,0 +1,16 @@
+# Certificate: cert-manager writes tls.crt + tls.key into Secret task-2-41-tls.
+# dnsNames must match Ingress spec.rules[].host and spec.tls[].hosts.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: task-2-41-cert
+  namespace: akash-c-a
+spec:
+  secretName: task-2-41-tls
+  issuerRef:
+    name: task-2-41-issuer
+    kind: Issuer
+    group: cert-manager.io
+  commonName: task-2-41-akash-c-a.local
+  dnsNames:
+    - task-2-41-akash-c-a.local

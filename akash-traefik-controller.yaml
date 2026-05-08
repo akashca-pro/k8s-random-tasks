@@ -70,6 +70,8 @@ spec:
             - --providers.kubernetesingress.namespaces=akash-c-a
             - --entrypoints.web.address=:80
             - --entrypoints.websecure.address=:443
+            # Required for Kubernetes Ingress TLS termination on websecure (matches typical K3s/Civo Traefik).
+            - --entrypoints.websecure.http.tls=true
           ports:
             - name: web
               containerPort: 80
