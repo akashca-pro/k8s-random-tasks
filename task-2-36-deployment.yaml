@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-2-36-deployment
+  namespace: akash-c-a
+  labels:
+    app: task-2-36-nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: task-2-36-nginx
+  template:
+    metadata:
+      labels:
+        app: task-2-36-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.26
+        ports:
+        - containerPort: 80
