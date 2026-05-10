@@ -1,0 +1,31 @@
+# Task 2.43 — requests larger than any node can satisfy → Pod stays Pending.
+# If this still schedules on an oversized cluster, raise cpu/memory further.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-2-43-unschedulable-deployment
+  namespace: akash-c-a
+  labels:
+    app: task-2-43-unschedulable
+    task: task-2-43
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-2-43-unschedulable
+  template:
+    metadata:
+      labels:
+        app: task-2-43-unschedulable
+        task: task-2-43
+    spec:
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.9
+          resources:
+            requests:
+              cpu: "1000"
+              memory: 1Ti
+            limits:
+              cpu: "1000"
+              memory: 1Ti

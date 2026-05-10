@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-2-43-oom-deployment
+  namespace: akash-c-a
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: task-2-43-oom
+
+  template:
+    metadata:
+      labels:
+        app: task-2-43-oom
+
+    spec:
+      containers:
+        - name: stress
+          image: polinux/stress:latest
+
+          command:
+            - stress
+
+          args:
+            - --vm
+            - "1"
+            - --vm-bytes
+            - 200M
+            - --vm-hang
+            - "0"
+            - --verbose
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+
+            limits:
+              cpu: "1"
+              memory: 64Mi
