@@ -1,0 +1,78 @@
+# Task 2.44 — liveness, readiness, startup probes + Service for endpoints demo
+# Markers live on emptyDir (not under /var/run/nginx) to avoid clashing with nginx.
+# Readiness/liveness use exec probes (reliable); startup uses httpGet once nginx listens.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-2-44-service
+  namespace: akash-c-a
+  labels:
+    app: task-2-44-app
+    task: task-2-44
+spec:
+  type: ClusterIP
+  selector:
+    app: task-2-44-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-2-44-deployment
+  namespace: akash-c-a
+  labels:
+    app: task-2-44-app
+    task: task-2-44
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-2-44-app
+  template:
+    metadata:
+      labels:
+        app: task-2-44-app
+        task: task-2-44
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.26
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: probe-state
+              mountPath: /var/lib/task-2-44
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              mkdir -p /var/lib/task-2-44
+              touch /var/lib/task-2-44/live /var/lib/task-2-44/ready
+              echo "task-2-44: artificial slow start (40s)..." >&2
+              sleep 40
+              exec nginx -g "daemon off;"
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "test -f /var/lib/task-2-44/ready"]
+            periodSeconds: 3
+            failureThreshold: 2
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "test -f /var/lib/task-2-44/live"]
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+      volumes:
+        - name: probe-state
+          emptyDir: {}
