@@ -1,0 +1,31 @@
+# Task 2.42 — mounts PVC at /data; use exec to write/read and delete pod to prove persistence
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-2-42-deployment
+  namespace: akash-c-a
+  labels:
+    app: task-2-42-demo
+    task: task-2-42
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-2-42-demo
+  template:
+    metadata:
+      labels:
+        app: task-2-42-demo
+        task: task-2-42
+    spec:
+      containers:
+        - name: busybox
+          image: busybox:1.36
+          command: ["sh", "-c", "sleep infinity"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: task-2-42-pvc

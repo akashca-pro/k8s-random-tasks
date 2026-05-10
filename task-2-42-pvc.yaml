@@ -1,0 +1,17 @@
+# Task 2.42 — PersistentVolumeClaim (≥1Gi)
+# Binds via default StorageClass (dynamic provisioning) if cluster has one.
+# If PVC stays Pending: kubectl get storageclass && add storageClassName below.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-2-42-pvc
+  namespace: akash-c-a
+  labels:
+    task: task-2-42
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # storageClassName: <your-cluster-default-or-local-path>
