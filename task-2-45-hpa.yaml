@@ -1,0 +1,23 @@
+# Task 2.45 — HPA (CPU). Requires metrics-server (Civo K3s ships metrics-server in kube-system).
+# Target: average CPU across pods = 50% of each pod's CPU request (200m → aim ~100m average).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: task-2-45-hpa
+  namespace: akash-c-a
+  labels:
+    task: task-2-45
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: task-2-45-deployment
+  minReplicas: 1
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50

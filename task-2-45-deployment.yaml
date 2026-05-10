@@ -1,0 +1,50 @@
+# Task 2.45 — Deployment with CPU requests (required for CPU-based HPA on Civo/K3s).
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-2-45-service
+  namespace: akash-c-a
+  labels:
+    app: task-2-45-app
+    task: task-2-45
+spec:
+  type: ClusterIP
+  selector:
+    app: task-2-45-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-2-45-deployment
+  namespace: akash-c-a
+  labels:
+    app: task-2-45-app
+    task: task-2-45
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-2-45-app
+  template:
+    metadata:
+      labels:
+        app: task-2-45-app
+        task: task-2-45
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.26
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 200m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
