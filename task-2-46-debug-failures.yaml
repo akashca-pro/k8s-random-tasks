@@ -1,0 +1,51 @@
+# Task 2.46 — intentional failure Pods for debugging practice (apply one at a time or all; delete after demo).
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-2-46-crash-pod
+  namespace: akash-c-a
+  labels:
+    task: task-2-46
+    debug: crashloop
+spec:
+  containers:
+    - name: crash
+      image: busybox:1.36
+      command: ["/bin/sh", "-c", "echo failing on purpose && exit 1"]
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-2-46-pull-pod
+  namespace: akash-c-a
+  labels:
+    task: task-2-46
+    debug: imagepull
+spec:
+  containers:
+    - name: app
+      image: nonexistent.registry.example/task-2-46:invalid-tag
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-2-46-pending-pod
+  namespace: akash-c-a
+  labels:
+    task: task-2-46
+    debug: pending
+spec:
+  containers:
+    - name: pause
+      image: registry.k8s.io/pause:3.9
+      resources:
+        requests:
+          cpu: "1000"
+          memory: 1Ti
+        limits:
+          cpu: "1000"
+          memory: 1Ti
+  restartPolicy: Never

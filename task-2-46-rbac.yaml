@@ -1,0 +1,55 @@
+# Task 2.46 — ServiceAccount + Role (namespace-scoped) + RoleBinding + workload using the SA
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: task-2-46-serviceaccount
+  namespace: akash-c-a
+  labels:
+    task: task-2-46
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: task-2-46-role
+  namespace: akash-c-a
+  labels:
+    task: task-2-46
+rules:
+  # Least privilege: read-only on Pods only in this namespace (no secrets, no delete).
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: task-2-46-rolebinding
+  namespace: akash-c-a
+  labels:
+    task: task-2-46
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: task-2-46-role
+subjects:
+  - kind: ServiceAccount
+    name: task-2-46-serviceaccount
+    namespace: akash-c-a
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-2-46-demo-pod
+  namespace: akash-c-a
+  labels:
+    app: task-2-46-demo
+    task: task-2-46
+spec:
+  serviceAccountName: task-2-46-serviceaccount
+  automountServiceAccountToken: true
+  containers:
+    - name: demo
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep infinity"]
+  restartPolicy: Always
